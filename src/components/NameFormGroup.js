@@ -41,7 +41,6 @@ const NameFormGroup = ({
     setFnameChangeOccured(false);
     setFnameChangesApplied(false);
     setFnameChangesSaved(false);
-    cancelFname();
   };
 
   const onFnameChangeHandler = (e) => setFname(e.target.value.trim());
@@ -49,20 +48,38 @@ const NameFormGroup = ({
   const onFnameKeyupHandler = () =>
     setFnameChangeOccured(fname.trim() !== bu_fname.trim() ? true : false);
 
-  const saveFnameChanges = () => {
-    if (changes) {
-      changes.fname = fname;
+  const saveChanges = (obj) => {
+    if (null !== changes) {
+      changes.which = obj.which;
+      switch (obj.which) {
+        case 'fname':
+          changes.fname = obj.value;
+          changes.value = obj.value;
+          changes.which = obj.which;
+          break;
+
+        case 'lname':
+          changes.lname = obj.value;
+          changes.value = obj.value;
+          changes.which = obj.which;
+          break;
+
+        default:
+          break;
+      }
     } else {
-      setChanges({
+      const update = {
         id: id,
         action: 'update',
         property: 'name',
-        which: 'fname',
-        fname: fname,
-        lname: lname,
-      });
+        which: obj.which,
+        value: obj.value,
+      };
+      setChanges(update);
     }
-    setFnameChangesSaved(true);
+    obj.which === 'fname'
+      ? setFnameChangesSaved(true)
+      : setLnameChangesSaved(true);
   };
 
   const applyFnameChanges = () => setFnameChangesApplied(true);
@@ -81,29 +98,12 @@ const NameFormGroup = ({
     setLnameChangeOccured(false);
     setLnameChangesApplied(false);
     setLnameChangesSaved(false);
-    cancelLname();
   };
 
   const onLnameChangeHandler = (e) => setLname(e.target.value.trim());
 
   const onLnameKeyupHandler = () =>
     setLnameChangeOccured(lname.trim() !== bu_lname.trim() ? true : false);
-
-  const saveLnameChanges = () => {
-    if (changes) {
-      changes.lname = lname;
-    } else {
-      setChanges({
-        id: id,
-        action: 'update',
-        property: 'name',
-        which: 'lname',
-        lname: lname,
-        fname: fname,
-      });
-    }
-    setLnameChangesSaved(true);
-  };
 
   const applyLnameChanges = () => setLnameChangesApplied(true);
 
@@ -126,7 +126,12 @@ const NameFormGroup = ({
             {!fnameChangesSaved ? (
               <Col className='my-3' xs={12} md={6}>
                 <span
-                  onClick={saveFnameChanges}
+                  onClick={() => {
+                    saveChanges({
+                      which: 'fname',
+                      value: fname,
+                    });
+                  }}
                   className='btn btn-outline-primary d-inline-block border border-primary rounded font-weight-bold'
                 >
                   <i className='fas fa-pencil-alt fw'></i> Save
@@ -137,7 +142,7 @@ const NameFormGroup = ({
             {fnameChangesSaved ? (
               <>
                 {!fnameChangesApplied ? (
-                  <Col className='my-3' xs={12} md={3}>
+                  <Col className='my-3' xs={12} md={6}>
                     <span
                       onClick={() => {
                         applyFnameChanges();
@@ -152,14 +157,19 @@ const NameFormGroup = ({
                   </Col>
                 ) : null}
 
-                <Col className='my-3' xs={12} md={6}>
-                  <span
-                    onClick={resetFname}
-                    className='btn btn-outline-success d-inline-block border border-success rounded font-weight-bold'
-                  >
-                    <i className='fas fa-stop fw'></i> Cancel
-                  </span>
-                </Col>
+                {fnameChangesApplied ? (
+                  <Col className='my-3' xs={12} md={6}>
+                    <span
+                      onClick={() => {
+                        resetFname();
+                        cancelFname();
+                      }}
+                      className='btn btn-outline-success d-inline-block border border-success rounded font-weight-bold'
+                    >
+                      <i className='fas fa-stop fw'></i> Cancel
+                    </span>
+                  </Col>
+                ) : null}
               </>
             ) : null}
           </>
@@ -184,7 +194,12 @@ const NameFormGroup = ({
             {!lnameChangesSaved ? (
               <Col className='my-3' xs={12} md={6}>
                 <span
-                  onClick={saveLnameChanges}
+                  onClick={() => {
+                    saveChanges({
+                      which: 'lname',
+                      value: lname,
+                    });
+                  }}
                   className='btn btn-outline-primary d-inline-block border border-primary rounded font-weight-bold'
                 >
                   <i className='fas fa-pencil-alt fw'></i> Save
@@ -195,7 +210,7 @@ const NameFormGroup = ({
             {lnameChangesSaved ? (
               <>
                 {!lnameChangesApplied ? (
-                  <Col className='my-3' xs={12} md={3}>
+                  <Col className='my-3' xs={12} md={6}>
                     <span
                       onClick={() => {
                         applyLnameChanges();
@@ -210,14 +225,19 @@ const NameFormGroup = ({
                   </Col>
                 ) : null}
 
-                <Col className='my-3' xs={12} md={6}>
-                  <span
-                    onClick={resetLname}
-                    className='btn btn-outline-success d-inline-block border border-success rounded font-weight-bold'
-                  >
-                    <i className='fas fa-stop fw'></i> Cancel
-                  </span>
-                </Col>
+                {lnameChangesApplied ? (
+                  <Col className='my-3' xs={12} md={6}>
+                    <span
+                      onClick={() => {
+                        resetLname();
+                        cancelLname();
+                      }}
+                      className='btn btn-outline-success d-inline-block border border-success rounded font-weight-bold'
+                    >
+                      <i className='fas fa-stop fw'></i> Cancel
+                    </span>
+                  </Col>
+                ) : null}
               </>
             ) : null}
           </>

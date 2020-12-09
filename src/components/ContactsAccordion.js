@@ -15,6 +15,23 @@ import { log, hasKeys, stringify } from '../utils';
 
 const ContactsAccordion = ({ contacts }) => {
   const [contactsToUpdate, setContactsToUpdate] = useState([]);
+  const [hasUpdates, setHasUpdates] = useState(false);
+
+  const checkUpdateStatus = () => {
+    let checked = false;
+    for (let c = 0; c < contactsToUpdate.length; c++) {
+      const contact = contactsToUpdate[c];
+      if (
+        hasKeys(contact.name) ||
+        contact.emails.length > 0 ||
+        contact.phones.length > 0
+      ) {
+        checked = true;
+        continue;
+      }
+    }
+    setHasUpdates(checked);
+  };
 
   const updateEntity = (obj) => {
     if (obj.id) {
@@ -48,8 +65,7 @@ const ContactsAccordion = ({ contacts }) => {
             break;
 
           case 'name':
-            contact.name.fname = obj.fname;
-            contact.name.lname = obj.lname;
+            contact.name[`${obj.which}`] = obj.value;
             break;
 
           default:
@@ -65,13 +81,14 @@ const ContactsAccordion = ({ contacts }) => {
           action: obj.action,
           emails: [],
           phones: [],
-          name: { fname: '', lname: '' },
+          name: {},
         };
         contactsToUpdate.push(contact);
         switch (obj.property) {
           case 'email':
             console.log(`${obj.action} ${obj.property}`);
             contact.emails.push({
+              action: obj.action,
               category: obj.category || null,
               email: obj.email || null,
             });
@@ -79,6 +96,7 @@ const ContactsAccordion = ({ contacts }) => {
 
           case 'phone':
             contact.phones.push({
+              action: obj.action,
               category: obj.category || null,
               phone: obj.phone || null,
             });
@@ -87,11 +105,11 @@ const ContactsAccordion = ({ contacts }) => {
           case 'name':
             switch (obj.which) {
               case 'fname':
-                contact.name.fname = obj.fname;
+                contact.name.fname = obj.value;
                 break;
 
               case 'lname':
-                contact.name.lname = obj.lname;
+                contact.name.lname = obj.value;
                 break;
 
               default:
@@ -108,8 +126,10 @@ const ContactsAccordion = ({ contacts }) => {
       console.log(`\n\n\t\t\tID not provided\n\n`);
       return;
     }
-    console.log(`\n\n\t\t\tContacts To Be Updated`);
-    console.log(contactsToUpdate);
+    log(`\n\n\t\t\tContacts to update`);
+    log(contactsToUpdate);
+    log(`\n\n\n`);
+    checkUpdateStatus();
   };
 
   const cancelUpdate = (obj) => {
@@ -118,8 +138,19 @@ const ContactsAccordion = ({ contacts }) => {
     if (contact) {
       switch (obj.property) {
         case 'name':
-          log(`Cancel update for property ${obj.which}`);
-          delete contact.name[obj.which];
+          log(`Cancel update for ${contact.name[obj.which]}`);
+          switch (obj.which) {
+            case 'fname':
+              delete contact.name.fname;
+              break;
+
+            case 'lname':
+              delete contact.name.lname;
+              break;
+
+            default:
+              break;
+          }
           break;
 
         case 'email':
@@ -155,16 +186,54 @@ const ContactsAccordion = ({ contacts }) => {
         default:
           break;
       }
+      log(`\n\n\t\t\tContacts to Update`);
+      log(contactsToUpdate);
+      log(`\n\n\n`);
     } else {
       console.log(`\n\n\t\tNothing to cancel`);
     }
-    console.log(
-      `\n\n\t\tCancelled Update To Property: ${obj.which || obj.property}`
-    );
-    console.log(contactsToUpdate);
+    checkUpdateStatus();
   };
 
-  const removeProperty = (obj) => {};
+  const removeProperty = (obj) => {
+    let contact = contactsToUpdate.find((x) => x.id === obj.id);
+
+    if (contact) {
+      contact.action = obj.action;
+      log(`\n\n\t\t\tSet removal request on listed contact\n\n`);
+      switch (obj.property) {
+        case 'name':
+          break;
+
+        case 'email':
+          const emailIndex = contact.emails.findIndex(
+            (x) => x.email === obj.email
+          );
+          if (emailIndex !== -1) {
+            const email = contact.emails[emailIndex];
+            email.action = obj.action;
+          }
+          break;
+
+        case 'phone':
+          const phoneIndex = contact.phones.findIndex(
+            (x) => x.phone === obj.phone
+          );
+          if (phoneIndex !== -1) {
+            const phone = contact.phones[phoneIndex];
+            phone.action = obj.action;
+          }
+          break;
+
+        default:
+          break;
+      }
+    } else {
+      contactsToUpdate.push(obj);
+      log(`\n\n\t\t\tAdded contact for removal request\n\n`);
+    }
+    checkUpdateStatus();
+  };
 
   const accordion = contacts.map((contact) => {
     return (
@@ -237,7 +306,7 @@ const ContactsAccordion = ({ contacts }) => {
                             phone={phone.phone}
                             category={phone.category}
                             modifyProperty={updateEntity}
-                            removeProperty={updateEntity}
+                            removeProperty={removeProperty}
                             cancelModification={cancelUpdate}
                           />
                         ))}
@@ -258,7 +327,7 @@ const ContactsAccordion = ({ contacts }) => {
                             email={email.email}
                             category={email.category}
                             modifyProperty={updateEntity}
-                            removeProperty={updateEntity}
+                            removeProperty={removeProperty}
                             cancelModification={cancelUpdate}
                           />
                         ))}
@@ -275,17 +344,38 @@ const ContactsAccordion = ({ contacts }) => {
   });
 
   return (
-    <Row>
-      <Col xs={12} md={2}>
-        {' '}
-        <span className='btn btn-outline-success d-inline-block border border-success rounded font-weight-bold'>
-          <i className='fas fa-go fw'></i> Upload Changes
-        </span>
-      </Col>
-      <Col xs={12} md={10}>
-        <Accordion>{accordion}</Accordion>
-      </Col>
-    </Row>
+    <>
+      <Row style={{ textAlign: 'center' }}>
+        {hasUpdates ? (
+          <>
+            <Col className='mb-3' xs={12} md={6}>
+              {' '}
+              <span className='btn btn-outline-success d-inline-block border border-success rounded font-weight-bold'>
+                <i className='fas fa-go fw'></i> Upload Changes
+              </span>
+            </Col>
+
+            <Col className='mb-3' xs={12} md={6}>
+              {' '}
+              <span
+                onClick={() => {
+                  setContactsToUpdate([]);
+                  checkUpdateStatus();
+                }}
+                className='btn btn-outline-success d-inline-block border border-success rounded font-weight-bold'
+              >
+                <i className='fas fa-go fw'></i> Cancel Changes
+              </span>
+            </Col>
+          </>
+        ) : null}
+      </Row>
+      <Row>
+        <Col xs={12}>
+          <Accordion>{accordion}</Accordion>
+        </Col>
+      </Row>
+    </>
   );
 };
 

@@ -26,13 +26,7 @@ const EmailFormGroup = ({
     setBuEmail(email);
   }, [category, email, _category, _email]);
 
-  const resetEmail = () => {
-    setCategory(bu_category);
-    setEmail(bu_email);
-    setChangeOccured(false);
-    setChangesApplied(false);
-    setChangesSaved(false);
-    setChanges(null);
+  const cancelEmailUpdate = () => {
     cancelModification({
       id: id,
       action: 'cancel',
@@ -40,6 +34,15 @@ const EmailFormGroup = ({
       email: _email,
       category: _category,
     });
+  };
+
+  const resetEmail = () => {
+    setCategory(bu_category);
+    setEmail(bu_email);
+    setChangeOccured(false);
+    setChangesApplied(false);
+    setChangesSaved(false);
+    setChanges(null);
   };
 
   const saveProperty = () => {
@@ -59,16 +62,13 @@ const EmailFormGroup = ({
 
   const deleteProperty = () => {
     resetEmail();
-
-    setChanges({
+    removeProperty({
       action: 'remove',
       id: id,
       category: _category,
       property: 'email',
       email: _email,
     });
-
-    setChangeOccured(false);
   };
 
   const onChangeHandler = (e) => setEmail(e.target.value.trim());
@@ -167,7 +167,10 @@ const EmailFormGroup = ({
 
                   <Col className='my-3' xs={12} md={3}>
                     <span
-                      onClick={resetEmail}
+                      onClick={() => {
+                        resetEmail();
+                        cancelEmailUpdate();
+                      }}
                       className='btn btn-outline-success d-inline-block border border-success rounded font-weight-bold'
                     >
                       <i className='fas fa-stop fw'></i> Cancel
