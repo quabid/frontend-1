@@ -45,13 +45,14 @@ const EmailFormGroup = ({
     setChanges(null);
   };
 
-  const saveProperty = () => {
+  const saveProperty = (obj) => {
     setChanges({
-      action: 'update',
+      action: obj.action,
       id: id,
       category: _category,
       property: 'email',
       email: _email,
+      which: obj.which,
     });
     setChangesSaved(true);
   };
@@ -105,6 +106,14 @@ const EmailFormGroup = ({
                           `Selected item changed to: ${selectedItem}`
                         );
                         setCategory(selectedItem);
+
+                        saveProperty({
+                          which: 'category',
+                          action: 'updatecategory',
+                        });
+                        setChangeOccured(true);
+                        setChangesSaved(true);
+                        applyChanges();
                       }}
                       href={'#' + option}
                       active={
@@ -139,7 +148,9 @@ const EmailFormGroup = ({
               {!changesSaved ? (
                 <Col className='my-3' xs={12} md={3}>
                   <span
-                    onClick={saveProperty}
+                    onClick={() => {
+                      saveProperty({ which: 'email', action: 'updateemail' });
+                    }}
                     className='btn btn-outline-primary d-inline-block border border-primary rounded font-weight-bold'
                   >
                     <i className='fas fa-pencil-alt fw'></i> Save

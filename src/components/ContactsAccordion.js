@@ -17,21 +17,7 @@ const ContactsAccordion = ({ contacts }) => {
   const [contactsToUpdate, setContactsToUpdate] = useState([]);
   const [hasUpdates, setHasUpdates] = useState(false);
 
-  const checkUpdateStatus = () => {
-    let checked = false;
-    for (let c = 0; c < contactsToUpdate.length; c++) {
-      const contact = contactsToUpdate[c];
-      if (
-        hasKeys(contact.name) ||
-        contact.emails.length > 0 ||
-        contact.phones.length > 0
-      ) {
-        checked = true;
-        continue;
-      }
-    }
-    setHasUpdates(checked);
-  };
+  const checkUpdateStatus = () => {};
 
   const updateEntity = (obj) => {
     if (obj.id) {
@@ -74,7 +60,7 @@ const ContactsAccordion = ({ contacts }) => {
         }
       } else {
         // If contact is not in the list add it by ID
-        console.log(`${obj.action} ${obj.property}`);
+        // console.log(`${obj.action} ${obj.property}`);
 
         const contact = {
           id: obj.id,
@@ -84,6 +70,8 @@ const ContactsAccordion = ({ contacts }) => {
           name: {},
         };
         contactsToUpdate.push(contact);
+        setHasUpdates(contactsToUpdate.length > 0);
+
         switch (obj.property) {
           case 'email':
             console.log(`${obj.action} ${obj.property}`);
@@ -91,6 +79,8 @@ const ContactsAccordion = ({ contacts }) => {
               action: obj.action,
               category: obj.category || null,
               email: obj.email || null,
+              which: obj.which,
+              property: obj.property,
             });
             break;
 
@@ -133,9 +123,11 @@ const ContactsAccordion = ({ contacts }) => {
   };
 
   const cancelUpdate = (obj) => {
-    const contact = contactsToUpdate.find((x) => x.id === obj.id);
+    const contactIndex = contactsToUpdate.findIndex((x) => x.id === obj.id);
 
-    if (contact) {
+    if (contactIndex !== -1) {
+      const contact = contactsToUpdate[contactIndex];
+
       switch (obj.property) {
         case 'name':
           log(`Cancel update for ${contact.name[obj.which]}`);
@@ -186,11 +178,17 @@ const ContactsAccordion = ({ contacts }) => {
         default:
           break;
       }
-      log(`\n\n\t\t\tContacts to Update`);
-      log(contactsToUpdate);
-      log(`\n\n\n`);
+
+      if (
+        (null === contact.name || !hasKeys(contact.name)) &&
+        (null === contact.emails || contact.emails.length === 0) &&
+        (null === contact.phones || contact.phones.length === 0)
+      ) {
+        contactsToUpdate.splice(contactIndex, (contactIndex += 1));
+        setHasUpdates(contactsToUpdate.length > 0);
+      }
     } else {
-      console.log(`\n\n\t\tNothing to cancel`);
+      console.log(`\n\n\t\tContact not found: ${stringify(obj)}\n\n`);
     }
     checkUpdateStatus();
   };
@@ -296,9 +294,6 @@ const ContactsAccordion = ({ contacts }) => {
                         <h2 className='h5 text-left font-weight-bolder'>
                           Phones
                         </h2>
-                        <h2 className='h5 text-right d-inline-block add add-phone'>
-                          <i className='fas fa-plus fw'></i>
-                        </h2>
                         {contact.phones.map((phone, index) => (
                           <PhoneFormGroup
                             key={index + 1}
@@ -316,9 +311,6 @@ const ContactsAccordion = ({ contacts }) => {
                       <Col className='p-3'>
                         <h2 className='h5 text-left font-weight-bolder'>
                           Emails
-                        </h2>
-                        <h2 className='h5 text-right d-inline-block add add-email'>
-                          <i className='fas fa-plus fw'></i>
                         </h2>
                         {contact.emails.map((email, index) => (
                           <EmailFormGroup
