@@ -345,27 +345,11 @@ const ContactsAccordion = ({ contacts }) => {
     <>
       <Row style={{ textAlign: 'center' }}>
         {hasUpdates ? (
-          <>
-            <Col className='mb-3' xs={12} md={6}>
-              {' '}
-              <span className='btn btn-outline-success d-inline-block border border-success rounded font-weight-bold'>
-                <i className='fas fa-go fw'></i> Upload Changes
-              </span>
-            </Col>
-
-            <Col className='mb-3' xs={12} md={6}>
-              {' '}
-              <span
-                onClick={() => {
-                  setContactsToUpdate([]);
-                  checkUpdateStatus();
-                }}
-                className='btn btn-outline-success d-inline-block border border-success rounded font-weight-bold'
-              >
-                <i className='fas fa-go fw'></i> Cancel Changes
-              </span>
-            </Col>
-          </>
+          <Col className='mb-3' xs={12} md={6}>
+            <span className='btn btn-outline-success d-inline-block border border-success rounded font-weight-bold'>
+              <i className='fas fa-go fw'></i> Upload Changes
+            </span>
+          </Col>
         ) : null}
       </Row>
       <Row>
