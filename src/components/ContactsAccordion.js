@@ -17,7 +17,19 @@ const ContactsAccordion = ({ contacts }) => {
   const [contactsToUpdate, setContactsToUpdate] = useState([]);
   const [hasUpdates, setHasUpdates] = useState(false);
 
-  const checkUpdateStatus = () => {};
+  const checkUpdateStatus = () => {
+    for (let c in contactsToUpdate) {
+      const objC = contactsToUpdate[c];
+      if (
+        (null === objC.name || !hasKeys(objC.name)) &&
+        (null === objC.emails || objC.emails.length === 0) &&
+        (null === objC.phones || objC.phones.length === 0)
+      ) {
+        contactsToUpdate.splice(c, (c += 1));
+      }
+    }
+    setHasUpdates(contactsToUpdate.length > 0);
+  };
 
   const updateEntity = (obj) => {
     if (obj.id) {
@@ -70,7 +82,6 @@ const ContactsAccordion = ({ contacts }) => {
           name: {},
         };
         contactsToUpdate.push(contact);
-        setHasUpdates(contactsToUpdate.length > 0);
 
         switch (obj.property) {
           case 'email':
@@ -127,6 +138,7 @@ const ContactsAccordion = ({ contacts }) => {
 
     if (contactIndex !== -1) {
       const contact = contactsToUpdate[contactIndex];
+      contact.action = obj.action;
 
       switch (obj.property) {
         case 'name':
@@ -178,18 +190,12 @@ const ContactsAccordion = ({ contacts }) => {
         default:
           break;
       }
-
-      if (
-        (null === contact.name || !hasKeys(contact.name)) &&
-        (null === contact.emails || contact.emails.length === 0) &&
-        (null === contact.phones || contact.phones.length === 0)
-      ) {
-        contactsToUpdate.splice(contactIndex, (contactIndex += 1));
-        setHasUpdates(contactsToUpdate.length > 0);
-      }
     } else {
       console.log(`\n\n\t\tContact not found: ${stringify(obj)}\n\n`);
     }
+    log(`\n\n`);
+    log(contactsToUpdate);
+    log(`\n\n`);
     checkUpdateStatus();
   };
 
