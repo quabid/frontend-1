@@ -13,14 +13,15 @@ const ContactsScreen = () => {
   const dispatch = useDispatch();
 
   // @ts-ignore
-  const contactsList = useSelector((state) => state.contactsList);
+  const contactsList = useSelector(state => state.contactsList);
   const { loading, error, contacts } = contactsList;
 
   useEffect(() => {
     dispatch(listContacts());
   }, [dispatch]);
 
-  const handleContactsUpdate = (contacts) => {
+  const handleContactsUpdate = contacts => {
+    setUpdates(contacts);
     updates
       ? console.log(`Updating contacts:  ${JSON.stringify(contacts)}`)
       : console.log(`\n\n\t\t\n\n`);
@@ -29,12 +30,15 @@ const ContactsScreen = () => {
   return loading ? (
     <Loader />
   ) : error ? (
-    <Message variant='danger'>{error}</Message>
+    <Message variant="danger">{error}</Message>
   ) : (
     <Container fluid>
       <Row>
-        <Col className='v-scroll' style={{ height: '77vh' }} xs={12}>
-          <ContactsAccordion contacts={contacts} />
+        <Col className="v-scroll" style={{ height: '77vh' }} xs={12}>
+          <ContactsAccordion
+            handleContactsUpdate={handleContactsUpdate}
+            contacts={contacts}
+          />
         </Col>
       </Row>
     </Container>
