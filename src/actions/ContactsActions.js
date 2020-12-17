@@ -128,3 +128,36 @@ export const updateContact = contact => async (dispatch, getState) => {
     });
   }
 };
+
+export const updateContacts = contact => async (dispatch, getState) => {
+  try {
+    dispatch({ type: ContactsConsts.UPDATE_CONTACT_SUCCESS });
+
+    const {
+      userLogin: { userInfo },
+    } = getState();
+
+    const config = {
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${userInfo['token']}`,
+      },
+    };
+
+    const { data } = await axios.put(
+      `/api/contact/${contact.id}`,
+      contact,
+      config
+    );
+
+    dispatch({ type: ContactsConsts.UPDATE_CONTACT_SUCCESS, payload: data });
+  } catch (err) {
+    dispatch({
+      type: ContactsConsts.UPDATE_CONTACT_FAIL,
+      payload:
+        err.response && err.response.data.message
+          ? err.response.data.message
+          : err.message,
+    });
+  }
+};

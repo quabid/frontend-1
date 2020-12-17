@@ -52,6 +52,7 @@ const EmailFormGroup = ({
       category: _category,
       property: 'email',
       email: _email,
+      oldEmail: bu_email,
     });
     setChangesSaved(true);
   };

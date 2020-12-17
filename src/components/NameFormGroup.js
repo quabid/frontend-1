@@ -43,12 +43,12 @@ const NameFormGroup = ({
     setFnameChangesSaved(false);
   };
 
-  const onFnameChangeHandler = (e) => setFname(e.target.value.trim());
+  const onFnameChangeHandler = e => setFname(e.target.value.trim());
 
   const onFnameKeyupHandler = () =>
     setFnameChangeOccured(fname.trim() !== bu_fname.trim() ? true : false);
 
-  const saveChanges = (obj) => {
+  const saveChanges = obj => {
     if (null !== changes) {
       changes.which = obj.which;
       switch (obj.which) {
@@ -56,12 +56,14 @@ const NameFormGroup = ({
           changes.fname = obj.value;
           changes.value = obj.value;
           changes.which = obj.which;
+          changes.oldFname = bu_fname;
           break;
 
         case 'lname':
           changes.lname = obj.value;
           changes.value = obj.value;
           changes.which = obj.which;
+          changes.oldLname = bu_lname;
           break;
 
         default:
@@ -100,7 +102,7 @@ const NameFormGroup = ({
     setLnameChangesSaved(false);
   };
 
-  const onLnameChangeHandler = (e) => setLname(e.target.value.trim());
+  const onLnameChangeHandler = e => setLname(e.target.value.trim());
 
   const onLnameKeyupHandler = () =>
     setLnameChangeOccured(lname.trim() !== bu_lname.trim() ? true : false);
@@ -111,11 +113,11 @@ const NameFormGroup = ({
     <Row>
       <Col xs={12} md={6}>
         <Form.Control
-          className='my-2 mx-auto'
+          className="my-2 mx-auto"
           style={{ background: 'transparent', color: '#fff' }}
-          size='lg'
-          as='input'
-          type='text'
+          size="lg"
+          as="input"
+          type="text"
           value={fname}
           onChange={onFnameChangeHandler}
           onKeyUp={onFnameKeyupHandler}
@@ -124,7 +126,7 @@ const NameFormGroup = ({
         {fnameChangeOccured ? (
           <>
             {!fnameChangesSaved ? (
-              <Col className='my-3' xs={12} md={6}>
+              <Col className="my-3" xs={12} md={6}>
                 <span
                   onClick={() => {
                     saveChanges({
@@ -132,9 +134,9 @@ const NameFormGroup = ({
                       value: fname,
                     });
                   }}
-                  className='btn btn-outline-primary d-inline-block border border-primary rounded font-weight-bold'
+                  className="btn btn-outline-primary d-inline-block border border-primary rounded font-weight-bold"
                 >
-                  <i className='fas fa-pencil-alt fw'></i> Save
+                  <i className="fas fa-pencil-alt fw"></i> Save
                 </span>
               </Col>
             ) : null}
@@ -142,7 +144,7 @@ const NameFormGroup = ({
             {fnameChangesSaved ? (
               <>
                 {!fnameChangesApplied ? (
-                  <Col className='my-3' xs={12} md={6}>
+                  <Col className="my-3" xs={12} md={6}>
                     <span
                       onClick={() => {
                         applyFnameChanges();
@@ -150,23 +152,23 @@ const NameFormGroup = ({
                           changes.action === 'update' &&
                           modifyProperty(changes);
                       }}
-                      className='btn btn-outline-success d-inline-block border border-success rounded font-weight-bold'
+                      className="btn btn-outline-success d-inline-block border border-success rounded font-weight-bold"
                     >
-                      <i className='fas fa-go fw'></i> Apply
+                      <i className="fas fa-go fw"></i> Apply
                     </span>
                   </Col>
                 ) : null}
 
                 {fnameChangesApplied ? (
-                  <Col className='my-3' xs={12} md={6}>
+                  <Col className="my-3" xs={12} md={6}>
                     <span
                       onClick={() => {
                         resetFname();
                         cancelFname();
                       }}
-                      className='btn btn-outline-success d-inline-block border border-success rounded font-weight-bold'
+                      className="btn btn-outline-success d-inline-block border border-success rounded font-weight-bold"
                     >
-                      <i className='fas fa-stop fw'></i> Cancel
+                      <i className="fas fa-stop fw"></i> Cancel
                     </span>
                   </Col>
                 ) : null}
@@ -178,11 +180,11 @@ const NameFormGroup = ({
 
       <Col xs={12} md={6}>
         <Form.Control
-          className='my-2 mx-auto'
+          className="my-2 mx-auto"
           style={{ background: 'transparent', color: '#fff' }}
-          size='lg'
-          as='input'
-          type='text'
+          size="lg"
+          as="input"
+          type="text"
           // updateContact
           value={lname}
           onChange={onLnameChangeHandler}
@@ -192,7 +194,7 @@ const NameFormGroup = ({
         {lnameChangeOccured ? (
           <>
             {!lnameChangesSaved ? (
-              <Col className='my-3' xs={12} md={6}>
+              <Col className="my-3" xs={12} md={6}>
                 <span
                   onClick={() => {
                     saveChanges({
@@ -200,9 +202,9 @@ const NameFormGroup = ({
                       value: lname,
                     });
                   }}
-                  className='btn btn-outline-primary d-inline-block border border-primary rounded font-weight-bold'
+                  className="btn btn-outline-primary d-inline-block border border-primary rounded font-weight-bold"
                 >
-                  <i className='fas fa-pencil-alt fw'></i> Save
+                  <i className="fas fa-pencil-alt fw"></i> Save
                 </span>
               </Col>
             ) : null}
@@ -210,7 +212,7 @@ const NameFormGroup = ({
             {lnameChangesSaved ? (
               <>
                 {!lnameChangesApplied ? (
-                  <Col className='my-3' xs={12} md={6}>
+                  <Col className="my-3" xs={12} md={6}>
                     <span
                       onClick={() => {
                         applyLnameChanges();
@@ -218,23 +220,23 @@ const NameFormGroup = ({
                           changes.action === 'update' &&
                           modifyProperty(changes);
                       }}
-                      className='btn btn-outline-success d-inline-block border border-success rounded font-weight-bold'
+                      className="btn btn-outline-success d-inline-block border border-success rounded font-weight-bold"
                     >
-                      <i className='fas fa-go fw'></i> Apply
+                      <i className="fas fa-go fw"></i> Apply
                     </span>
                   </Col>
                 ) : null}
 
                 {lnameChangesApplied ? (
-                  <Col className='my-3' xs={12} md={6}>
+                  <Col className="my-3" xs={12} md={6}>
                     <span
                       onClick={() => {
                         resetLname();
                         cancelLname();
                       }}
-                      className='btn btn-outline-success d-inline-block border border-success rounded font-weight-bold'
+                      className="btn btn-outline-success d-inline-block border border-success rounded font-weight-bold"
                     >
-                      <i className='fas fa-stop fw'></i> Cancel
+                      <i className="fas fa-stop fw"></i> Cancel
                     </span>
                   </Col>
                 ) : null}

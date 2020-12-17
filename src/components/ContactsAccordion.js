@@ -40,10 +40,14 @@ const ContactsAccordion = ({ contacts, handleContactsUpdate }) => {
             if (email) {
               email.category = obj.category;
               email.email = obj.email;
+              email.oldEmail = obj.oldEmail;
+              email.action = obj.action;
             } else {
               contact.emails.push({
-                category: obj.category || null,
-                email: obj.email || null,
+                category: obj.category,
+                email: obj.email,
+                oldEmail: obj.oldEmail,
+                action: obj.action,
               });
             }
             break;
@@ -57,16 +61,21 @@ const ContactsAccordion = ({ contacts, handleContactsUpdate }) => {
             if (phone) {
               phone.category = obj.category;
               phone.phone = obj.phone;
+              phone.oldPhone = obj.oldPhone;
+              phone.action = obj.action;
             } else {
               contact.phones.push({
                 category: obj.category,
                 phone: obj.phone,
+                oldPhone: obj.oldPhone,
+                action: obj.action,
               });
             }
             break;
 
           case 'name':
             contact.name[`${obj.which}`] = obj.value;
+            contact.name.action = obj.action;
             break;
 
           default:
