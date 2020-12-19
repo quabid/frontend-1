@@ -1,6 +1,7 @@
 import * as ContactsConsts from '../constants/ContactsActionTypes';
 // import axios from 'axios';
 import { contacts } from '../data/contacts';
+import { log } from '../utils';
 
 export const listContacts = () => async (dispatch, getState) => {
   try {
@@ -33,7 +34,7 @@ export const listContacts = () => async (dispatch, getState) => {
   }
 };
 
-export const getContact = (id) => async (dispatch, getState) => {
+export const getContact = id => async (dispatch, getState) => {
   try {
     dispatch({ type: ContactsConsts.GET_CONTACT_REQUEST });
 
@@ -52,7 +53,7 @@ export const getContact = (id) => async (dispatch, getState) => {
 
     dispatch({
       type: ContactsConsts.GET_CONTACT_SUCCESS,
-      payload: contacts.find((x) => x.id === id),
+      payload: contacts.find(x => x.id === id),
     });
   } catch (err) {
     dispatch({
@@ -65,7 +66,7 @@ export const getContact = (id) => async (dispatch, getState) => {
   }
 };
 
-export const createContact = (contact) => async (dispatch, getState) => {
+export const createContact = contact => async (dispatch, getState) => {
   try {
     dispatch({ type: ContactsConsts.CREATE_CONTACT_REQUEST });
 
@@ -98,7 +99,7 @@ export const createContact = (contact) => async (dispatch, getState) => {
   }
 };
 
-export const updateContact = (contact) => async (dispatch, getState) => {
+export const updateContact = contact => async (dispatch, getState) => {
   try {
     dispatch({ type: ContactsConsts.UPDATE_CONTACT_SUCCESS });
 
@@ -119,7 +120,7 @@ export const updateContact = (contact) => async (dispatch, getState) => {
       config
     ); */
 
-    let data = contacts.find((x) => x._id === contact.id) || null;
+    let data = contacts.find(x => x._id === contact.id) || null;
 
     if (null !== data) {
       data = Object.assign(data, contact);
@@ -130,6 +131,58 @@ export const updateContact = (contact) => async (dispatch, getState) => {
         payload: `Contact not found`,
       });
     }
+  } catch (err) {
+    dispatch({
+      type: ContactsConsts.UPDATE_CONTACT_FAIL,
+      payload:
+        err.response && err.response.data.message
+          ? err.response.data.message
+          : err.message,
+    });
+  }
+};
+
+export const updateContacts = contacts => async (dispatch, getState) => {
+  try {
+    dispatch({ type: ContactsConsts.UPDATE_CONTACT_SUCCESS });
+
+    log(`\n\n\n\t\t\tContacts that will be updated\n`);
+    log(contacts);
+    log(`\n\n\n\t\t\tContacts that will be updated\n`);
+
+    dispatch({
+      type: ContactsConsts.UPDATE_CONTACT_SUCCESS,
+      payload: contacts,
+    });
+
+    /*  const {
+      userLogin: { userInfo },
+    } = getState();
+
+    const config = {
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${userInfo['token']}`,
+      },
+    };
+
+    const { data } = await axios.put(
+      `/api/contact/${contact.id}`,
+      contact,
+      config
+    ); */
+
+    // let data = contacts.find(x => x._id === contact.id) || null;
+
+    /*  if (null !== data) {
+      data = Object.assign(data, contact);
+      dispatch({ type: ContactsConsts.UPDATE_CONTACT_SUCCESS, payload: data });
+    } else {
+      dispatch({
+        type: ContactsConsts.UPDATE_CONTACT_FAIL,
+        payload: `Contact not found`,
+      });
+    } */
   } catch (err) {
     dispatch({
       type: ContactsConsts.UPDATE_CONTACT_FAIL,

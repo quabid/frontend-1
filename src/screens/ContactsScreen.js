@@ -1,11 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { Link } from 'react-router-dom';
 import Message from '../components/Message';
 import Loader from '../components/Loader';
-import { Container, Row, Col, Button } from 'react-bootstrap';
+import { Container, Row, Col } from 'react-bootstrap';
 import ContactsAccordion from '../components/ContactsAccordion';
-import { listContacts } from '../actions/ContactsActions_';
+import { listContacts, updateContacts } from '../actions/ContactsActions_';
 
 const ContactsScreen = () => {
   const [updates, setUpdates] = useState(false);
@@ -22,9 +21,10 @@ const ContactsScreen = () => {
 
   const handleContactsUpdate = contacts => {
     setUpdates(contacts);
-    updates
+    /*  updates
       ? console.log(`Updating contacts:  ${JSON.stringify(contacts)}`)
-      : console.log(`\n\n\t\t\n\n`);
+      : console.log(`\n\n\t\t\n\n`); */
+    dispatch(updateContacts(contacts));
   };
 
   return loading ? (

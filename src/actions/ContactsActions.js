@@ -129,7 +129,7 @@ export const updateContact = contact => async (dispatch, getState) => {
   }
 };
 
-export const updateContacts = contact => async (dispatch, getState) => {
+export const updateContacts = contacts => async (dispatch, getState) => {
   try {
     dispatch({ type: ContactsConsts.UPDATE_CONTACT_SUCCESS });
 
@@ -145,8 +145,8 @@ export const updateContacts = contact => async (dispatch, getState) => {
     };
 
     const { data } = await axios.put(
-      `/api/contact/${contact.id}`,
-      contact,
+      `/api/contacts/${contacts}`,
+      contacts,
       config
     );
 

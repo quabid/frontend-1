@@ -25,9 +25,9 @@ const ContactsAccordion = ({ contacts, handleContactsUpdate }) => {
   };
 
   const updateEntity = obj => {
+    console.log(`${obj.action} ${obj.property}`);
     if (obj.id) {
       const contact = contactsToUpdate.find(x => x.id === obj.id);
-      console.log(`${obj.action} ${obj.property}`);
       // If contact is in the list
       if (contact) {
         switch (obj.property) {
@@ -92,13 +92,12 @@ const ContactsAccordion = ({ contacts, handleContactsUpdate }) => {
 
         switch (obj.property) {
           case 'email':
-            console.log(`${obj.action} ${obj.property}`);
             contact.emails = [];
             contact.emails.push({
               action: obj.action,
-              category: obj.category || null,
-              email: obj.email || null,
-              which: obj.which,
+              category: obj.category,
+              email: obj.email,
+              oldEmail: obj.oldEmail,
               property: obj.property,
             });
             break;
@@ -107,8 +106,9 @@ const ContactsAccordion = ({ contacts, handleContactsUpdate }) => {
             contact.phones = [];
             contact.phones.push({
               action: obj.action,
-              category: obj.category || null,
-              phone: obj.phone || null,
+              category: obj.category,
+              phone: obj.phone,
+              oldPhone: obj.oldPhone,
             });
             break;
 
@@ -202,7 +202,7 @@ const ContactsAccordion = ({ contacts, handleContactsUpdate }) => {
   };
 
   const removeProperty = obj => {
-    let contact = contactsToUpdate.find(x => x.id === obj.id);
+    const contact = contactsToUpdate.find(x => x.id === obj.id);
 
     if (contact) {
       contact.action = obj.action;
@@ -212,22 +212,34 @@ const ContactsAccordion = ({ contacts, handleContactsUpdate }) => {
           break;
 
         case 'email':
-          const emailIndex = contact.emails.findIndex(
-            x => x.email === obj.email
-          );
-          if (emailIndex !== -1) {
-            const email = contact.emails[emailIndex];
-            email.action = obj.action;
+          if (contact.emails) {
+            const emailIndex = contact.emails.findIndex(
+              x => x.email === obj.email
+            );
+            if (emailIndex !== -1) {
+              const email = contact.emails[emailIndex];
+              email.action = obj.action;
+            }
+          } else {
+            contact.emails = [];
+            const emailRemoval = Object.assign({}, obj);
+            contact.emails.push(emailRemoval);
           }
           break;
 
         case 'phone':
-          const phoneIndex = contact.phones.findIndex(
-            x => x.phone === obj.phone
-          );
-          if (phoneIndex !== -1) {
-            const phone = contact.phones[phoneIndex];
-            phone.action = obj.action;
+          if (contact.phones) {
+            const phoneIndex = contact.phones.findIndex(
+              x => x.phone === obj.phone
+            );
+            if (phoneIndex !== -1) {
+              const phone = contact.phones[phoneIndex];
+              phone.action = obj.action;
+            }
+          } else {
+            contact.phones = [];
+            const phoneRemoval = Object.assign({}, obj);
+            contact.phones.push(phoneRemoval);
           }
           break;
 
@@ -235,8 +247,35 @@ const ContactsAccordion = ({ contacts, handleContactsUpdate }) => {
           break;
       }
     } else {
-      contactsToUpdate.push(obj);
-      log(`\n\n\t\t\tAdded contact for removal request\n\n`);
+      const propertyRemoval = {};
+      propertyRemoval.action = obj.action;
+      propertyRemoval.id = obj.id;
+      switch (obj.property) {
+        case 'phone':
+          propertyRemoval.phones = [];
+          propertyRemoval.phones.push({
+            category: obj.category,
+            phone: obj.phone,
+            id: obj.id,
+            action: obj.action,
+          });
+          break;
+
+        case 'email':
+          propertyRemoval.emails = [];
+          propertyRemoval.emails.push({
+            category: obj.category,
+            email: obj.email,
+            id: obj.id,
+            action: obj.action,
+          });
+          break;
+
+        default:
+          break;
+      }
+      contactsToUpdate.push(propertyRemoval);
+      log(`\n\n\t\t\tAdded contact property for removal request\n\n`);
     }
     checkUpdateStatus();
   };
